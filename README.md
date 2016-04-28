@@ -30,9 +30,9 @@ You’ll have to make some changes to the code in [BoxParti.py](BoxParti.py) to 
 In line 1483 change **_open_** to **_start_**. It should look like this: 
 ```python
 @staticmethod
-def openfile(self):
+def openfile():
      # use 'start' instead of 'open' in a Windows OS
-     os.system(“start Python_Project_BoxParti.pdf")
+     os.system("start Python_Project_BoxParti.pdf")
 ```
 **_NOTE: this might not be up-to-date!_**
 
