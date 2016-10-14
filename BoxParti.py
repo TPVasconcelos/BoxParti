@@ -533,7 +533,7 @@ class Page2D(tk.Frame):
     @staticmethod
     def init_2d():
         """animation init function"""
-        return ax.plot([], [])
+        return []
 
     def animate_2d(self, i):
         """Animation Functon for the 2D simulator"""
@@ -1168,7 +1168,7 @@ class Page3D(tk.Frame):
     @staticmethod
     def init_3d():
         """animation init function"""
-        return ax.plot3D([], [], [])
+        return []
 
     def animate_3d(self, i):
         """Animation Functon for the 2D simulator"""
