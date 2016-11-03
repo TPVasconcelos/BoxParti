@@ -1,20 +1,7 @@
 # BoxParti
-*This is open source!*
-
 *Please do use this and modify it as you wish.*
 
-*If you do use it and modify it, I would appreciate if you shared your work with me!*
-
 *And let me know if you can find a way of overcoming some of the issues in the code:*
-
-- *Once the animation starts running on tkinter, I could not find a way of stoping it with a ’STOP’ button. I do not like the fact that I have to ask the user to chose the animation duration before hand (using the ‘frames’ option).*
-- *For some reason there is a backend conflict when I ran this on Canopy in OS X. However, I can run it on the command line or on PyCharm with no problem (I do need to specify the 'TKAgg’ backend)*
-- *In the 3D Simulation I would like to make it possible to zoom in and out and move around the plot.*
-- *I know it’s bad practice using global function, as it increases the chance of getting a bug on the program. But I couldn’t get around not using it on functions:*
-	- *Page2D.plot_2d 		(global ax)*
-	- *Page2D.plot_rand_walk 	(global ax)*
-	- *Page3D.plot_3d 		(global ax)*
-	- *Page3D.plot_rand_walk 	(global ax)*
 
 ## 1. What is it?
 *BoxParti* is a computer program that allows users to visualise a simulation based on an ideal gas model. 
