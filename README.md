@@ -10,7 +10,7 @@ numpy
 
 I have noticed that this version **performes better on OS X**. With minor changes it can also run on Linux and Windows. 
 
-##### If running on Windows: 
+### If running on Windows: 
 You’ll have to make some changes to the code in [BoxParti.py](BoxParti.py) to be able to open the files in the *HelpMenu*.
 
 Around line 1483 change **_open_** to **_start_**. It should look like this: 
@@ -21,11 +21,11 @@ def openfile():
      os.system("start Python_Project_BoxParti.pdf")
 ```
 
-##### If running on Linux:
+### If running on Linux:
 I have only tested this on Ubuntum distro. But the WelcomePage() class in [BoxParti.py](BoxParti.py) should only be using the **pack** or **grid** methods. This would actually be the correct way of doing it, according to Tkinter documentation!
 
 
-### 4. Gallery
+## 4. Gallery
 #### The HomePage/WelcomePage
 ![welcome page](readme_gallery/WelcomePage.jpg)
 
