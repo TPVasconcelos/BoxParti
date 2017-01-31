@@ -6,7 +6,7 @@ numpy
 
 # BoxParti
 
-*BoxParti* is a Tkinter GUI running a **_hard sphere molecular dynamics model simulation_**.
+This was a project for a Scientific Computing Skills module in my Physics undergraduate. It is a Tkinter GUI running a **_hard sphere molecular dynamics model simulation_**.
 
 I have noticed that this version **performes better on OS X**. With minor changes it can also run on Linux and Windows. 
 
