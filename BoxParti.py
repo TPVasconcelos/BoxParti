@@ -1,35 +1,32 @@
-# matplotlib
+import os
+import random
+import tkinter as tk
+import tkinter.messagebox as box
+import warnings
+from itertools import product, combinations
+
 import matplotlib
+
 matplotlib.use('TKAgg')
+
+import matplotlib.animation as animation
+import matplotlib.patches as patches
+import numpy as np
+import scipy.stats as stats
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
-import matplotlib.animation as animation
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.path import Path
-import matplotlib.patches as patches
-# Tkinter
-import Tkinter as tk
-import tkMessageBox as box
-# scipy
-from scipy.spatial.distance import pdist, squareform
-import scipy.stats as stats
-from scipy.special import erf
+from mpl_toolkits.mplot3d import Axes3D
 from scipy.interpolate import interp1d as interp
-# others
-import numpy as np
-import random
-from itertools import product, combinations
-import os
-import webbrowser
-import warnings
-warnings.filterwarnings('error')
+from scipy.spatial.distance import pdist, squareform
+from scipy.special import erf
 
+warnings.filterwarnings('error')
 
 # This fonts might not work on a Windows machine...
 # you could easily find them on the internet!
 TITLE_FONT = ("Helvetica", 25, "bold")
 BUTTONS_FONT = ("Consolas", 25, "bold")
-
 
 
 class BoxParti(tk.Tk):
@@ -41,6 +38,7 @@ class BoxParti(tk.Tk):
     The initial frame is given by the WelcomePage class.
     New frames are raised using show_frame() func
     """
+
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
@@ -77,6 +75,7 @@ class WelcomePage(tk.Frame):
 
     There are also two 'real' permanent buttons (QUIT & MAIN MENU)
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -95,6 +94,7 @@ class WelcomePage(tk.Frame):
                 controller.show_frame(Page3D)
             if (993 < event.x < 1118) and (528 < event.y < 572):
                 controller.show_frame(HelpMenu)
+
         welcome_label.bind("<Button-1>", callback)
 
         # making the two 'permanent' buttons
@@ -106,7 +106,7 @@ class WelcomePage(tk.Frame):
         button_quit.pack(side='right')
 
         """
-        # These are 'real' tk.Buttons if you prefere
+        # These are 'real' tk.Buttons
         button2D = tk.Button(self, text=">>> 2D Simulator",
                             command=lambda: controller.show_frame(Page_2D), font=BUTTONS_FONT)
         button3D = tk.Button(self, text=">>> 3D Simulator",
@@ -125,30 +125,22 @@ class Page2D(tk.Frame):
 
     Please read the discription of the individual functions for more info
     """
-    def __init__(self, parent, controller,
-                 bound=None,
-                 g=9.81,  # acceleration of gravity
-                 kb=1.38e-23,  # Boltzmann's constant
-                 amu=1.66e-27,  # amu(Atomic Mass Unit)
-                 velocity_list=None,
-                 time_init=0,
-                 ):
+
+    def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text="2D Simulator", font=TITLE_FONT)
         label.pack(side="top", fill="x")
 
         # assign some initial conditions/values
-        if bound is None:
-            self.bound = [-2, 2]
-        self.g = g
-        self.kb = kb
-        self.amu = amu
+        self.bound = [-2, 2]
+        self.g = 9.81
+        self.kb = 1.38e-23
+        self.amu = 1.66e-27
 
         # assign initial lists
-        if velocity_list is None:
-            self.velocity_list = []
-        self.time_passed = time_init
+        self.velocity_list = []
+        self.time_passed = 0
         self.trace_x = []
         self.trace_y = []
 
@@ -204,14 +196,14 @@ class Page2D(tk.Frame):
                                       "Please check all your values and try again!")
                 break
             for v in val:
-                # acept only 0123456789 digits or '.' for the decimal place
+                # accept only 0123456789 digits or '.' for the decimal place
                 if v in '0123456789.':
                     try:
                         float(val)
                     except ValueError:
                         box.showerror(message="Whoops! Something went wrong...\n\n"
-                                      "Please remember not to leave anything in blank.\n"
-                                      "Please check all your values and try again!")
+                                              "Please remember not to leave anything in blank.\n"
+                                              "Please check all your values and try again!")
                         break
                 else:
                     box.showerror(message="Whoops! Something went wrong...\n\n"
@@ -233,13 +225,13 @@ class Page2D(tk.Frame):
 
         # the legend
         self.colours = tk.Label(input_frame, text="\n\nLegend:\n\n"
-                                "YELLOW particles are the ones with speeds within one standard\n"
-                                "deviation from the mean speed and the RED and CYAN particles\n"
-                                "are respectively above and below one standard deviation from\n"
-                                "the mean speed.\n\n"
-                                "red = fast\n"
-                                "yellow = average\n"
-                                "cyan = slow\n", font=("Helvetica", 15, 'bold'), justify='left')
+                                                  "YELLOW particles are the ones with speeds within one standard\n"
+                                                  "deviation from the mean speed and the RED and CYAN particles\n"
+                                                  "are respectively above and below one standard deviation from\n"
+                                                  "the mean speed.\n\n"
+                                                  "red = fast\n"
+                                                  "yellow = average\n"
+                                                  "cyan = slow\n", font=("Helvetica", 15, 'bold'), justify='left')
         self.colours.grid(column=0, row=13, columnspan=3)
 
         # the labels
@@ -321,50 +313,53 @@ class Page2D(tk.Frame):
                                                               "Tungsten Hexafluoride -> 298amu\n\n1amu = 1.66e-27g"))
         self.butmass.grid(column=2, row=0)
         self.butN = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Number of particles",
-                              "If you wish to have more than 1000 particles, make sure that the 'Gravity' and "
-                              "'Collisions' options are disabled. The 'Reset Velocities' option should be on.\n"
-                              "This allows for faster calculations and a better animation."))
+                                                                                  "If you wish to have more than 1000 particles, make sure that the 'Gravity' and "
+                                                                                  "'Collisions' options are disabled. The 'Reset Velocities' option should be on.\n"
+                                                                                  "This allows for faster calculations and a better animation."))
         self.butN.grid(column=2, row=1)
         self.butsize = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Size of the particles",
-                                 "The default value is a very exaggerated value. For an Ideal Gas simulation we would "
-                                 "neglect interatomic collisions."))
+                                                                                     "The default value is a very exaggerated value. For an Ideal Gas simulation we would "
+                                                                                     "neglect interatomic collisions."))
         self.butsize.grid(column=2, row=2)
         self.butT = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Temperature", "The temperature "
-                              "of the gas in Kelvin. In this simulation you can go down to absolute zero but note that"
-                              "the program does not simulate phase changes, so try and avoid very low temperatures."
-                              "The temperature affects the initial distribution of velocities of the particles."
-                              " (Maxwell-Boltzmann Speed Distribution).\n The simulation doesn't work for very high "
-                              "temperatures. The threshold temperature varies with the molecule/mass simulated."))
+                                                                                                 "of the gas in Kelvin. In this simulation you can go down to absolute zero but note that"
+                                                                                                 "the program does not simulate phase changes, so try and avoid very low temperatures."
+                                                                                                 "The temperature affects the initial distribution of velocities of the particles."
+                                                                                                 " (Maxwell-Boltzmann Speed Distribution).\n The simulation doesn't work for very high "
+                                                                                                 "temperatures. The threshold temperature varies with the molecule/mass simulated."))
         self.butT.grid(column=2, row=3)
-        self.butdt = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Time step", "This simulation uses a "
-                               "Euler Method to update the position of the particles for every dt seconds. The "
-                               "smaller this value is, the 'smoother' the animation will be but at the same time it "
-                               "will make the animation slower. For higher temperatures/higher velocities it is better "
-                               "to decrease dt as some particles that are supposed to undergo collision can 'pass right"
-                               " over each other'."))
+        self.butdt = tk.Button(input_frame, text="?",
+                               command=lambda: box.showinfo("Time step", "This simulation uses a "
+                                                                         "Euler Method to update the position of the particles for every dt seconds. The "
+                                                                         "smaller this value is, the 'smoother' the animation will be but at the same time it "
+                                                                         "will make the animation slower. For higher temperatures/higher velocities it is better "
+                                                                         "to decrease dt as some particles that are supposed to undergo collision can 'pass right"
+                                                                         " over each other'."))
         self.butdt.grid(column=2, row=4)
         self.butbins = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Histogram Bins", "The number of "
-                                 "bins of the speed distibution histogram can be set to any value you find more "
-                                 "appropriate."))
+                                                                                                       "bins of the speed distibution histogram can be set to any value you find more "
+                                                                                                       "appropriate."))
         self.butbins.grid(column=2, row=5)
         self.butrvv = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Velocity Values Reset", "When "
-                                "'ON' the program updates the values of the velocities for all the particles, deleting"
-                                " the old values. This allows the user to see the particles 'change colors' as they "
-                                "collide with each other. When displaying the Speed Distribution Histogram, the "
-                                "histogram shows the up-to-date velocities. If the button is disabled, the histogram "
-                                "will show the accumulation of all velocities since the beginning of the simulation."))
+                                                                                                             "'ON' the program updates the values of the velocities for all the particles, deleting"
+                                                                                                             " the old values. This allows the user to see the particles 'change colors' as they "
+                                                                                                             "collide with each other. When displaying the Speed Distribution Histogram, the "
+                                                                                                             "histogram shows the up-to-date velocities. If the button is disabled, the histogram "
+                                                                                                             "will show the accumulation of all velocities since the beginning of the simulation."))
         self.butrvv.grid(column=2, row=6)
-        self.butgrav = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Gravity", "When 'ON', the gravity "
-                                 "is exaggerated by a factor of 100 for visualisation purposes. Not essential for the "
-                                 "simulation of an Ideal Gas."))
+        self.butgrav = tk.Button(input_frame, text="?",
+                                 command=lambda: box.showinfo("Gravity", "When 'ON', the gravity "
+                                                                         "is exaggerated by a factor of 100 for visualisation purposes. Not essential for the "
+                                                                         "simulation of an Ideal Gas."))
         self.butgrav.grid(column=2, row=7)
-        self.butcoli = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Collisions", "When 'ON', particles"
-                                 " can undergo collisions with each other. This should be always 'ON' when visualizing"
-                                 " the 'Random Walk' option."))
+        self.butcoli = tk.Button(input_frame, text="?",
+                                 command=lambda: box.showinfo("Collisions", "When 'ON', particles"
+                                                                            " can undergo collisions with each other. This should be always 'ON' when visualizing"
+                                                                            " the 'Random Walk' option."))
         self.butcoli.grid(column=2, row=8)
         self.butdur = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Frames", "Number of frames in the "
-                                "animation/simulation. This is an unfortunate feature that had to be implemented in "
-                                "this program. This forces the animation to crash after n frames."))
+                                                                                              "animation/simulation. This is an unfortunate feature that had to be implemented in "
+                                                                                              "this program. This forces the animation to crash after n frames."))
         self.butdur.grid(column=2, row=9)
 
     def mb_speed_dist(self, v):
@@ -372,7 +367,7 @@ class Page2D(tk.Frame):
         T = float(self.temp.get())
         kb = self.kb
         m = self.mass()
-        return (m / (2 * np.pi * kb * T))**1.5 * 4 * np.pi * v**2 * np.exp(-m * v**2 / (2 * kb * T))
+        return (m / (2 * np.pi * kb * T)) ** 1.5 * 4 * np.pi * v ** 2 * np.exp(-m * v ** 2 / (2 * kb * T))
 
     def mb_cdf(self):
         """returns CMF of the Maxwell-Boltzmann speed distribution"""
@@ -384,7 +379,7 @@ class Page2D(tk.Frame):
         kb = self.kb
         m = self.mass()
         a = np.sqrt(kb * T / m)
-        return erf(v / (np.sqrt(2) * a)) - np.sqrt(2 / np.pi) * v * np.exp(-v**2 / (2 * a**2)) / a
+        return erf(v / (np.sqrt(2) * a)) - np.sqrt(2 / np.pi) * v * np.exp(-v ** 2 / (2 * a ** 2)) / a
 
     def vel_generator(self):
         """Returns and array of velocities in 2D [vx, vy]"""
@@ -404,7 +399,7 @@ class Page2D(tk.Frame):
             vx = (speeds[n, 0] / 100.) * random.choice([-1, 1])  # scaling factor of 10^-2
             vy = (speeds[n, 1] / 100.) * random.choice([-1, 1])  # scaling factor of 10^-2
             vel_vec = np.array([vx, vy])
-            new_speeds = np. vstack((new_speeds, vel_vec))
+            new_speeds = np.vstack((new_speeds, vel_vec))
         new_speeds = np.delete(new_speeds, 0, axis=0)
 
         # the mean value should be close to zero since the velocities
@@ -448,7 +443,7 @@ class Page2D(tk.Frame):
                 if self.gravity.get():
                     self.state[:, :2] += dt * self.state[:, 2:]
                     # Gravity exagerated by a factor of 1000 for visualisation purposes
-                    self.state[:, 3] += - 0.5 * (self.g * 1000) * (dt**2)
+                    self.state[:, 3] += - 0.5 * (self.g * 1000) * (dt ** 2)
                 else:
                     self.state[:, :2] += dt * self.state[:, 2:]
 
@@ -515,15 +510,15 @@ class Page2D(tk.Frame):
                 self.velocity_list = []
             for n in range(0, N):
                 # append new speeds
-                new_vel = np.sqrt(self.state[n, 2]**2 + self.state[n, 3]**2)
+                new_vel = np.sqrt(self.state[n, 2] ** 2 + self.state[n, 3] ** 2)
                 self.velocity_list.append(new_vel)
 
             ### and Finaly... ###
             return self.state[:, :2]
 
         self.time_passed = 0  # reset clock to zero
-        self.trace_x = []     # needed for the random walk simulator
-        self.trace_y = []     # needed for the random walk simulator
+        self.trace_x = []  # needed for the random walk simulator
+        self.trace_y = []  # needed for the random walk simulator
         self.fig.clf()
         # we need to force the animation to crash/finish
         # Still need to find an elegant solution to this issue
@@ -703,7 +698,7 @@ class Page2D(tk.Frame):
             N = int(self.N.get())
             N = float(N)
             T = int(self.temp.get())
-            V = abs((2 * self.bound[1])**3)  # Volume
+            V = abs((2 * self.bound[1]) ** 3)  # Volume
             m = self.mass()
             kb = self.kb
             R = 8.314
@@ -711,15 +706,15 @@ class Page2D(tk.Frame):
             # turn list into a numpy array
             new_vel_list = np.array(self.velocity_list)
             # mean squared velocity
-            vm = (1. / 2) * np.mean((new_vel_list * 100)**2)
+            vm = (1. / 2) * np.mean((new_vel_list * 100) ** 2)
 
             p_vel = (1. / 3) * (N / V) * m * vm
             p_temp = (N * kb * T) / V
             error = abs(p_temp - p_vel)
 
             box.showinfo("Pressure", "Computed from the average velocity\n(Kinetic Theory):\n-->{0}Pa"
-                         "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}Pa"
-                         "\n\nERROR: {2}".format(p_vel, p_temp, error))
+                                     "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}Pa"
+                                     "\n\nERROR: {2}".format(p_vel, p_temp, error))
 
         except RuntimeWarning:
             box.showwarning("Warning!", "Please run the simulation at least once before getting reading of "
@@ -733,13 +728,13 @@ class Page2D(tk.Frame):
             N = int(self.N.get())
             N = float(N)
             T = int(self.temp.get())
-            V = abs(200 * self.bound[1]**3)  # Volume
+            V = abs(200 * self.bound[1] ** 3)  # Volume
             m = self.mass()
             kb = self.kb
 
             # turn list into a numpy array
             new_vel_list = np.array(self.velocity_list)
-            vm = (1. / 2) * np.mean((new_vel_list * 100)**2)
+            vm = (1. / 2) * np.mean((new_vel_list * 100) ** 2)
 
             e_vel = (1. / 2) * m * vm
             e_temp = (3. / 2) * kb * T
@@ -747,10 +742,11 @@ class Page2D(tk.Frame):
             error = abs(e_vel - e_temp)
 
             box.showinfo("Translational Kinetic Energy", "Computed from the average velocity\n(Kinetic Theory):"
-                         "\n-->{0}J"
-                         "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}J"
-                         "\n\nERROR: {2}"
-                         "\n\nTotal Translational Kinetic Energy:\n-->{3}J".format(e_vel, e_temp, error, e_total))
+                                                         "\n-->{0}J"
+                                                         "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}J"
+                                                         "\n\nERROR: {2}"
+                                                         "\n\nTotal Translational Kinetic Energy:\n-->{3}J".format(
+                e_vel, e_temp, error, e_total))
 
         except RuntimeWarning:
             box.showwarning("Warning!", "Please run the simulation at least once before getting reading of "
@@ -767,30 +763,22 @@ class Page3D(tk.Frame):
           Please refer to those, as most of this code is the same but for 3 Dimentions!
 
     """
-    def __init__(self, parent, controller,
-                 bound=None,
-                 kb=1.38e-23,  # Boltzmann's constant
-                 amu=1.66e-27,  # amu(Atomic Mass Unit)
-                 g=9.81,
-                 velocity_list=None,
-                 time_init=0,
-                 ):
+
+    def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text="3D Simulator", font=TITLE_FONT)
         label.pack(side="top", fill="x")
 
         # assign some initial conditions/values
-        if bound is None:
-            self.bound = [-2, 2]
-        self.kb = kb
-        self.amu = amu
-        self.g = g
+        self.bound = [-2, 2]
+        self.g = 9.81
+        self.kb = 1.38e-23
+        self.amu = 1.66e-27
 
         # assign initial lists
-        if velocity_list is None:
-            self.velocity_list = []
-        self.time_passed = time_init
+        self.velocity_list = []
+        self.time_passed = 0
         self.trace_x = []
         self.trace_y = []
         self.trace_z = []
@@ -849,8 +837,8 @@ class Page3D(tk.Frame):
                         float(val)
                     except ValueError:
                         box.showerror(message="Whoops! Something went wrong...\n\n"
-                                      "Please remember not to leave anything in blank.\n"
-                                      "Please check all your values and try again!")
+                                              "Please remember not to leave anything in blank.\n"
+                                              "Please check all your values and try again!")
                         break
                 else:
                     box.showerror(message="Whoops! Something went wrong...\n\n"
@@ -871,13 +859,13 @@ class Page3D(tk.Frame):
         input_frame.grid(column=0, row=0)
 
         self.colours = tk.Label(input_frame, text="\n\nLegend:\n\n"
-                                "YELLOW particles are the ones with speeds within one standard\n"
-                                "deviation from the mean speed and the RED and CYAN particles\n"
-                                "are respectively above and below one standard deviation from\n"
-                                "the mean speed.\n\n"
-                                "red = fast\n"
-                                "yellow = average\n"
-                                "cyan = slow\n", font=("Helvetica", 15, 'bold'), justify='left')
+                                                  "YELLOW particles are the ones with speeds within one standard\n"
+                                                  "deviation from the mean speed and the RED and CYAN particles\n"
+                                                  "are respectively above and below one standard deviation from\n"
+                                                  "the mean speed.\n\n"
+                                                  "red = fast\n"
+                                                  "yellow = average\n"
+                                                  "cyan = slow\n", font=("Helvetica", 15, 'bold'), justify='left')
         self.colours.grid(column=0, row=13, columnspan=3)
 
         # the lables
@@ -958,50 +946,53 @@ class Page3D(tk.Frame):
                                                               "Tungsten Hexafluoride -> 298amu\n\n1amu = 1.66e-27g"))
         self.butmass.grid(column=2, row=0)
         self.butN = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Number of particles",
-                              "If you wish to have more than 1000 particles, make sure that the 'Gravity' and "
-                              "'Collisions' options are disabled. The 'Reset Velocities' option should be on.\n"
-                              "This allows for faster calculations and a better animation."))
+                                                                                  "If you wish to have more than 1000 particles, make sure that the 'Gravity' and "
+                                                                                  "'Collisions' options are disabled. The 'Reset Velocities' option should be on.\n"
+                                                                                  "This allows for faster calculations and a better animation."))
         self.butN.grid(column=2, row=1)
         self.butsize = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Size of the particles",
-                                 "The default value is a very exaggerated value. For an Ideal Gas simulation we would "
-                                 "neglect interatomic collisions."))
+                                                                                     "The default value is a very exaggerated value. For an Ideal Gas simulation we would "
+                                                                                     "neglect interatomic collisions."))
         self.butsize.grid(column=2, row=2)
         self.butT = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Temperature", "The temperature "
-                              "of the gas in Kelvin. In this simulation you can go down to absolute zero but note that"
-                              "the program does not simulate phase changes, so try and avoid very low temperatures."
-                              "The temperature affects the initial distribution of velocities of the particles."
-                              " (Maxwell-Boltzmann Speed Distribution).\n The simulation doesn't work for very high "
-                              "temperatures. The threshold temperature varies with the molecule/mass simulated."))
+                                                                                                 "of the gas in Kelvin. In this simulation you can go down to absolute zero but note that"
+                                                                                                 "the program does not simulate phase changes, so try and avoid very low temperatures."
+                                                                                                 "The temperature affects the initial distribution of velocities of the particles."
+                                                                                                 " (Maxwell-Boltzmann Speed Distribution).\n The simulation doesn't work for very high "
+                                                                                                 "temperatures. The threshold temperature varies with the molecule/mass simulated."))
         self.butT.grid(column=2, row=3)
-        self.butdt = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Time step", "This simulation uses a "
-                               "Euler Method to update the position of the particles for every dt seconds. The "
-                               "smaller this value is, the 'smoother' the animation will be but at the same time it "
-                               "will make the animation slower. For higher temperatures/higher velocities it is better "
-                               "to decrease dt as some particles that are supposed to undergo collision can 'pass right"
-                               " over each other'."))
+        self.butdt = tk.Button(input_frame, text="?",
+                               command=lambda: box.showinfo("Time step", "This simulation uses a "
+                                                                         "Euler Method to update the position of the particles for every dt seconds. The "
+                                                                         "smaller this value is, the 'smoother' the animation will be but at the same time it "
+                                                                         "will make the animation slower. For higher temperatures/higher velocities it is better "
+                                                                         "to decrease dt as some particles that are supposed to undergo collision can 'pass right"
+                                                                         " over each other'."))
         self.butdt.grid(column=2, row=4)
         self.butbins = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Histogram Bins", "The number of "
-                                 "bins of the speed distibution histogram can be set to any value you find more "
-                                 "appropriate."))
+                                                                                                       "bins of the speed distibution histogram can be set to any value you find more "
+                                                                                                       "appropriate."))
         self.butbins.grid(column=2, row=5)
         self.butrvv = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Velocity Values Reset", "When "
-                                "'ON' the program updates the values of the velocities for all the particles, deleting"
-                                " the old values. This allows the user to see the particles 'change colors' as they "
-                                "collide with each other. When displaying the Speed Distribution Histogram, the "
-                                "histogram shows the up-to-date velocities. If the button is disabled, the histogram "
-                                "will show the accumulation of all velocities since the beginning of the simulation."))
+                                                                                                             "'ON' the program updates the values of the velocities for all the particles, deleting"
+                                                                                                             " the old values. This allows the user to see the particles 'change colors' as they "
+                                                                                                             "collide with each other. When displaying the Speed Distribution Histogram, the "
+                                                                                                             "histogram shows the up-to-date velocities. If the button is disabled, the histogram "
+                                                                                                             "will show the accumulation of all velocities since the beginning of the simulation."))
         self.butrvv.grid(column=2, row=6)
-        self.butgrav = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Gravity", "When 'ON', the gravity "
-                                 "is exaggerated by a factor of 100 for visualisation purposes. Not essential for the "
-                                 "simulation of an Ideal Gas."))
+        self.butgrav = tk.Button(input_frame, text="?",
+                                 command=lambda: box.showinfo("Gravity", "When 'ON', the gravity "
+                                                                         "is exaggerated by a factor of 100 for visualisation purposes. Not essential for the "
+                                                                         "simulation of an Ideal Gas."))
         self.butgrav.grid(column=2, row=7)
-        self.butcoli = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Collisions", "When 'ON', particles"
-                                 " can undergo collisions with each other. This should be always 'ON' when visualizing"
-                                 " the 'Random Walk' option."))
+        self.butcoli = tk.Button(input_frame, text="?",
+                                 command=lambda: box.showinfo("Collisions", "When 'ON', particles"
+                                                                            " can undergo collisions with each other. This should be always 'ON' when visualizing"
+                                                                            " the 'Random Walk' option."))
         self.butcoli.grid(column=2, row=8)
         self.butdur = tk.Button(input_frame, text="?", command=lambda: box.showinfo("Frames", "Number of frames in the "
-                                "animation/simulation. This is an unfortunate feature that had to be implemented in "
-                                "this program. This forces the animation to crash after n frames."))
+                                                                                              "animation/simulation. This is an unfortunate feature that had to be implemented in "
+                                                                                              "this program. This forces the animation to crash after n frames."))
         self.butdur.grid(column=2, row=9)
 
     def mb_speed_dist(self, v):
@@ -1009,7 +1000,7 @@ class Page3D(tk.Frame):
         T = float(self.temp.get())
         kb = self.kb
         m = self.mass()
-        return 100 * (m / (2 * np.pi * kb * T))**1.5 * 4 * np.pi * v**2 * np.exp(-m * v**2 / (2 * kb * T))
+        return 100 * (m / (2 * np.pi * kb * T)) ** 1.5 * 4 * np.pi * v ** 2 * np.exp(-m * v ** 2 / (2 * kb * T))
 
     def mb_cdf(self):
         """Cumulative Distribution function of the Maxwell-Boltzmann speed distribution"""
@@ -1020,7 +1011,7 @@ class Page3D(tk.Frame):
         kb = self.kb
         m = self.mass()
         a = np.sqrt(kb * T / m)
-        return erf(v / (np.sqrt(2) * a)) - np.sqrt(2 / np.pi) * v * np.exp(-v**2 / (2 * a**2)) / a
+        return erf(v / (np.sqrt(2) * a)) - np.sqrt(2 / np.pi) * v * np.exp(-v ** 2 / (2 * a ** 2)) / a
 
     def vel_generator(self):
         """Returns and array of velocities in 2D [vx, vy]"""
@@ -1040,7 +1031,7 @@ class Page3D(tk.Frame):
             b = (speeds[n, 1] / 100.) * random.choice([-1, 1])  # scaling factor of 10^-2
             c = (speeds[n, 2] / 100.) * random.choice([-1, 1])  # scaling factor of 10^-2
             vel_vec = np.array([a, b, c])
-            new_speeds = np. vstack((new_speeds, vel_vec))
+            new_speeds = np.vstack((new_speeds, vel_vec))
         new_speeds = np.delete(new_speeds, 0, axis=0)
 
         # the mean value should be close to zero since the velocities
@@ -1079,7 +1070,7 @@ class Page3D(tk.Frame):
                 if self.gravity.get():
                     self.state[:, :3] += dt * self.state[:, 3:]
                     # Gravity exagerated by a factor of 1000 for visual porpuses
-                    self.state[:, 5] += - 0.5 * (self.g * 1000) * (dt**2)
+                    self.state[:, 5] += - 0.5 * (self.g * 1000) * (dt ** 2)
                 else:
                     self.state[:, :3] += dt * self.state[:, 3:]
 
@@ -1247,25 +1238,25 @@ class Page3D(tk.Frame):
                 If you wish to NOT draw faces of a cube 'comment' Cube_Faces() below """
             # Face 1
             x1 = np.array([[-2, -2, -2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             y1 = np.array([[-2, 2, 2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             z1 = np.array([[-2, -2, 2, 2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             # Face 2
             x2 = np.array([[-2, 2, 2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             y2 = np.array([[2, 2, 2, 2, 2],
-                          [2, 2, 2, 2, 2]])
+                           [2, 2, 2, 2, 2]])
             z2 = np.array([[-2, -2, 2, 2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             # Face 3
             x3 = np.array([[-2, -2, 2, 2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             y3 = np.array([[-2, 2, 2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             z3 = np.array([[-2, -2, -2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             ax.plot_surface(x1, y1, z1, color="k", alpha=0.6)
             ax.plot_surface(x2, y2, z2, color="k", alpha=0.4)
             ax.plot_surface(x3, y3, z3, color="k", alpha=0.2)
@@ -1349,25 +1340,25 @@ class Page3D(tk.Frame):
                 If you wish to NOT draw faces of a cube 'comment' Cube_Faces() below """
             # Face 1
             x1 = np.array([[-2, -2, -2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             y1 = np.array([[-2, 2, 2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             z1 = np.array([[-2, -2, 2, 2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             # Face 2
             x2 = np.array([[-2, 2, 2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             y2 = np.array([[2, 2, 2, 2, 2],
-                          [2, 2, 2, 2, 2]])
+                           [2, 2, 2, 2, 2]])
             z2 = np.array([[-2, -2, 2, 2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             # Face 3
             x3 = np.array([[-2, -2, 2, 2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             y3 = np.array([[-2, 2, 2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             z3 = np.array([[-2, -2, -2, -2, -2],
-                          [-2, -2, -2, -2, -2]])
+                           [-2, -2, -2, -2, -2]])
             ax.plot_surface(x1, y1, z1, color="k", alpha=0.6)
             ax.plot_surface(x2, y2, z2, color="k", alpha=0.4)
             ax.plot_surface(x3, y3, z3, color="k", alpha=0.2)
@@ -1386,21 +1377,21 @@ class Page3D(tk.Frame):
             N = int(self.N.get())
             N = float(N)
             T = int(self.temp.get())
-            V = abs((2 * self.bound[1])**3)
+            V = abs((2 * self.bound[1]) ** 3)
             m = self.mass()
             kb = self.kb
             R = 8.314
 
             new_vel_list = np.array(self.velocity_list)
-            vm = (1. / 3) * np.mean((new_vel_list * 100)**2)
+            vm = (1. / 3) * np.mean((new_vel_list * 100) ** 2)
 
             p_vel = (1. / 3) * (N / V) * m * vm
             p_temp = (N * kb * T) / V
             error = abs(p_vel - p_temp)
 
             box.showinfo("Pressure", "Computed from the average velocity\n(Kinetic Theory):\n-->{0}Pa"
-                         "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}Pa"
-                         "\n\nERROR: {2}".format(p_vel, p_temp, error))
+                                     "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}Pa"
+                                     "\n\nERROR: {2}".format(p_vel, p_temp, error))
 
         except RuntimeWarning:
             box.showwarning("Warning!", "Please run the simulation at least once before getting reading of "
@@ -1414,12 +1405,12 @@ class Page3D(tk.Frame):
             N = int(self.N.get())
             N = float(N)
             T = int(self.temp.get())
-            V = abs(200 * self.bound[1]**3)
+            V = abs(200 * self.bound[1] ** 3)
             m = self.mass()
             kb = self.kb
 
             new_vel_list = np.array(self.velocity_list)
-            vm = (1. / 3) * np.mean((new_vel_list * 100)**2)
+            vm = (1. / 3) * np.mean((new_vel_list * 100) ** 2)
 
             e_vel = (1. / 2) * m * vm
             e_temp = (3. / 2) * kb * T
@@ -1427,10 +1418,11 @@ class Page3D(tk.Frame):
             error = abs(e_vel - e_temp)
 
             box.showinfo("Translational Kinetic Energy", "Computed from the average velocity\n(Kinetic Theory):"
-                         "\n-->{0}J"
-                         "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}J"
-                         "\n\nERROR: {2}"
-                         "\n\nTotal Translational Kinetic Energy:\n-->{3}J".format(e_vel, e_temp, error, e_total))
+                                                         "\n-->{0}J"
+                                                         "\n\nComputed from the Temperature\n(Ideal Gas Law):\n-->{1}J"
+                                                         "\n\nERROR: {2}"
+                                                         "\n\nTotal Translational Kinetic Energy:\n-->{3}J".format(
+                e_vel, e_temp, error, e_total))
 
         except RuntimeWarning:
             box.showwarning("Warning!", "Please run the simulation at least once before getting reading of "
@@ -1442,6 +1434,7 @@ class HelpMenu(tk.Frame):
     The HelpMenu Frame class is not very developed.
     From here, you have access to a YouTube video showing how the program works and a small writen Report.
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -1481,15 +1474,20 @@ class HelpMenu(tk.Frame):
 
     @staticmethod
     def openfile():
-        # use 'start' instead of 'open' in a Windows OS
-        os.system("open Python_Project_BoxParti.pdf")
+        import platform
+        if platform.system().lower() in ('windows', 'win32'):
+            os.system("start Python_Project_BoxParti.pdf")
+        else:
+            os.system("open Python_Project_BoxParti.pdf")
 
     @staticmethod
     def openvideo():
+        import webbrowser
         webbrowser.open("https://youtu.be/iL4_eIdm02E")
         # If you have the video in your computer and dont have access to the internet:
         # use 'start' instead of 'open' in a Windows OS
         # os.system("open ExampleVideo.mov")
+
 
 if __name__ == "__main__":
     app = BoxParti()
