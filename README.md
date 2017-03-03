@@ -1,8 +1,8 @@
-TODO:requirements.txt
-Python 2.7
-matplotlib
-scipy
-numpy
+### TODO!
+- requirements.txt
+-- matplotlib
+-- scipy
+-- etc
 
 # BoxParti
 
