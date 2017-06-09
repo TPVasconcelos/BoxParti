@@ -6,7 +6,11 @@
 
 # BoxParti
 
-This was a project for a Scientific Computing Skills module in my Physics undergraduate. It is a Tkinter GUI running a **_hard sphere molecular dynamics model simulation_**.
+_Welcome to my first programming project._
+
+_Enjoy!_
+
+This was a project for a Scientific Computing Skills module in my Physics undergraduate. It is a Tkinter GUI running a **hard sphere molecular dynamics model simulation**.
 
 I have noticed that this version **performes better on OS X**. With minor changes it can also run on Linux and Windows. 
 
