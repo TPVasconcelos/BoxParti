@@ -1,25 +1,17 @@
-### TODO!
-- requirements.txt
--- matplotlib
--- scipy
--- etc
-
 # BoxParti
 
 _Welcome to my first programming project._
 
-_Enjoy!_
+This was a project for a Scientific Computing Skills module in my Physics undergraduate. It is a Tkinter GUI running a **simulation of hard sphere molecular dynamics model**.
 
-This was a project for a Scientific Computing Skills module in my Physics undergraduate. It is a Tkinter GUI running a **hard sphere molecular dynamics model simulation**.
-
-I have noticed that this version **performes better on OS X**. With minor changes it can also run on Linux and Windows. 
+I have noticed that this version **performes better on macOS**. With minor changes it can also run on Linux and Windows. 
 
 
 ### If running on Linux:
-I have only tested this on Ubuntum. But the WelcomePage() class in [BoxParti.py](BoxParti.py) should only be using the **pack** or **grid** methods. This would actually be the correct way of doing it, according to Tkinter documentation! Some work to be done there...
+I have only tested this on Ubuntum. But the `WelcomePage()` class in [BoxParti.py](BoxParti.py) should be using only either the **pack** or **grid** methods (not both). This would actually be the correct way of doing things, according to the Tkinter documentation.
 
 
-## 4. Gallery
+## Some snapshots of the interface and simulations:
 #### The HomePage/WelcomePage
 ![welcome page](readme_gallery/WelcomePage.jpg)
 
@@ -39,6 +31,6 @@ I have only tested this on Ubuntum. But the WelcomePage() class in [BoxParti.py]
 ![MB](readme_gallery/MB.gif)
 
 
-**Tomás Pereira de Vasconcelos**
+**Tomas Pereira de Vasconcelos**
 
 tomasvasconcelos1@gmail.com 
