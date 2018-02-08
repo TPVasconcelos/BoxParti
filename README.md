@@ -8,14 +8,11 @@ _My first programming project._
 
 This was a project for a "Scientific Computing Skills" module in the first year of my BSc Physics. It is a Tkinter GUI running a **hard sphere molecular dynamics model simulation**.
 
----
-
 I have noticed that this version performes better on macOS. With minor changes it can also run smoothly on Linux and Windows machines. 
 
 
 **If running on Linux** - I have only tested this on Ubuntum. But the `WelcomePage()` class in [BoxParti.py](BoxParti.py) should be using only either the **pack** or **grid** methods (not both). This would actually be the correct way of doing things, according to the Tkinter documentation.
 
----
 
 ## Some snapshots of the interface and simulations:
 
