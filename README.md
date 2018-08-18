@@ -1,17 +1,14 @@
-**Deprecated** - I have expanded this project into [pymodys](https://github.com/TPVasconcelos/pymodys), a python molecular dynamics simulation engine that also allows for 2D (matplotlib) and 3D (Blender) animations.
+**Deprecated** - I have expanded this project into [mdsea](https://github.com/TPVasconcelos/mdsea), a python molecular dynamics simulation engine with 2D and 3D animation rendering.
 
 ---
 
 # BoxParti
 
-_My first programming project._
+_"My first programming project."_
 
-This was a project for a "Scientific Computing Skills" module in the first year of my BSc Physics. It is a Tkinter GUI running a **hard sphere molecular dynamics model simulation**.
+I developed this project for a "Scientific Computing Skills" module in the first year of my Physics Undergraduate degree. It is a Tkinter GUI running a **hard-sphere molecular dynamics simulation**.
 
-I have noticed that this version performes better on macOS. With minor changes it can also run smoothly on Linux and Windows machines. 
-
-
-**If running on Linux** - I have only tested this on Ubuntum. But the `WelcomePage()` class in [BoxParti.py](BoxParti.py) should be using only either the **pack** or **grid** methods (not both). This would actually be the correct way of doing things, according to the Tkinter documentation.
+This was developed on macOS and I've noticed that the GUI does not render so well on Linux and Windows machines. This could be fixed and will be _"left as an exercise for the reader"_. \[**Hint:** The `WelcomePage()` class in [BoxParti.py](BoxParti.py) should only use the **pack** or **grid** methods (not both). This would actually be the correct way of doing things, [according to the Tkinter documentation](http://effbot.org/tkinterbook/grid.htm).\]
 
 
 ## Some snapshots of the interface and simulations:
